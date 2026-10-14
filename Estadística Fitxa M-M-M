@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadística: Mesures de Centralització i Anàlisi de Dades</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2canvas i jsPDF per generació perfecta de PDF d'una pàgina -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Eliminar fletxes dels inputs numèrics */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] { 
+            -moz-appearance: textfield; 
+        }
+
+        /* Animació de batec per al botó de reintent */
+        @keyframes softPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.6); 
+            }
+            50% { 
+                transform: scale(1.03); 
+                box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); 
+            }
+        }
+        .pulse-attention {
+            animation: softPulse 1.8s infinite ease-in-out;
+        }
+
+        /* Estils d'impressió i PDF */
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen py-3 sm:py-5 px-2 sm:px-4 text-slate-800" data-state="new" data-intents="0">
+
+    <main class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-4 sm:p-5 space-y-3 sm:space-y-4 border border-slate-200">
+        
+        <!-- Capçalera principal: Títol a l'esquerra, Dades de l'alumne a la dreta -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2.5 border-b border-slate-200">
+            <div>
+                <h1 class="text-lg sm:text-xl font-extrabold text-blue-900 tracking-tight">Estadística: Mesures de Centralització</h1>
+                <p class="text-slate-500 text-xs sm:text-sm font-medium mt-0.5">Deducció i relació entre Mitjana, Mediana i Moda</p>
+            </div>
+            
+            <!-- Dades de l'estudiant -->
+            <div class="w-full sm:w-auto bg-slate-50 p-2 sm:p-2.5 rounded-lg border border-slate-200 space-y-1.5 text-xs">
+                <div class="flex items-center gap-2">
+                    <label for="student-name" class="font-bold text-slate-700 w-10 text-xs">Nom:</label>
+                    <input type="text" id="student-name" placeholder="Nom de l'alumne/a" class="w-full sm:w-48 px-2.5 py-1 rounded border border-slate-300 text-blue-900 font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="student-group" class="font-bold text-slate-700 w-10 text-xs">Grup:</label>
+                    <input type="text" id="student-group" placeholder="Ex: 3r A" class="w-full sm:w-48 px-2.5 py-1 rounded border border-slate-300 text-blue-900 font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs">
+                </div>
+            </div>
+        </header>
+
+        <!-- Caixes informatives / pautes -->
+        <section class="bg-teal-50 border-l-4 border-teal-500 text-teal-900 p-2.5 sm:p-3 rounded-r-lg space-y-1 text-xs sm:text-sm">
+            <h2 class="font-bold text-teal-950 flex items-center gap-1.5 text-xs sm:text-sm">
+                <span>💡</span> Instruccions generals
+            </h2>
+            <ul class="list-disc list-inside space-y-0.5 pl-1 text-teal-800 text-xs">
+                <li>Completeu les activitats i taules seguint les condicions indicades a cada fila.</li>
+                <li><strong>IMPORTANT:</strong> Les dades de cada conjunt <u>han d'estar sempre ordenades de manera ascendent</u>.</li>
+                <li>Per a valors decimals, podeu utilitzar tant la coma com el punt (ex: <code>8,5</code> o <code>8.5</code>).</li>
+            </ul>
+        </section>
+
+        <!-- BLOC 1: Repàs de conceptes i identificació -->
+        <section class="space-y-1.5">
+            <div class="bg-blue-50 border-l-4 border-blue-600 px-2.5 py-1 rounded-r-lg">
+                <h2 class="text-xs sm:text-sm font-bold text-blue-700">Bloc 1: Identificació i Conceptes Clau</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs sm:text-sm">
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
+                    <label class="block font-medium text-slate-700 text-xs">1. Quin paràmetre representa la dada que es repeteix més?</label>
+                    <select id="b1-q1" class="w-full p-1 border border-slate-300 rounded font-bold text-blue-900 focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs bg-white">
+                        <option value="">-- Selecciona --</option>
+                        <option value="mitjana">Mitjana</option>
+                        <option value="mediana">Mediana</option>
+                        <option value="moda">Moda</option>
+                    </select>
+                </div>
+
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
+                    <label class="block font-medium text-slate-700 text-xs">2. Si tenim 4 dades ordenades, com es calcula la mediana?</label>
+                    <select id="b1-q2" class="w-full p-1 border border-slate-300 rounded font-bold text-blue-900 focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs bg-white">
+                        <option value="">-- Selecciona --</option>
+                        <option value="sum_tot">Sumant-ho tot i dividint entre 4</option>
+                        <option value="mitjana_centrals">Fent la mitjana dels dos valors centrals</option>
+                        <option value="valor_max">Agafant el valor més gran</option>
+                    </select>
+                </div>
+
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
+                    <label class="block font-medium text-slate-700 text-xs">3. Quina és la suma de 4 dades si la seva mitjana és 6?</label>
+                    <div class="flex items-center gap-2 pt-0.5">
+                        <span class="text-slate-600 font-medium text-xs">Suma =</span>
+                        <input type="number" id="b1-q3" class="w-full p-1 border border-slate-300 rounded font-bold text-blue-900 focus:ring-2 focus:ring-blue-500 focus:outline-none text-center text-xs" placeholder="?">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAULA PRINCIPAL (Blocs 2 i 3 de l'activitat) -->
+        <section class="space-y-1.5">
+            <div class="bg-blue-50 border-l-4 border-blue-600 px-2.5 py-1 rounded-r-lg">
+                <h2 class="text-xs sm:text-sm font-bold text-blue-700">Blocs 2 i 3: Anàlisi i Construcció de Taules Estadístiques</h2>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+                <table class="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs sm:text-sm font-bold">
+                            <th class="p-2 border-r border-slate-200 w-1/5 text-center">Condició</th>
+                            <th class="p-2 border-r border-slate-200 text-center">Dades Ordenades</th>
+                            <th class="p-2 border-r border-slate-200 text-center w-20">Mitjana</th>
+                            <th class="p-2 border-r border-slate-200 text-center w-20">Mediana</th>
+                            <th class="p-2 text-center w-20">Moda</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
+
+                        <!-- FILA 1 -->
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-2 font-semibold text-slate-700 border-r border-slate-200 bg-slate-50/50 text-center">
+                                <span id="cond-1">mitjana &lt; moda</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">0</span>
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">4</span>
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">6</span>
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">6</span>
+                                </div>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <input type="text" id="r1-mean" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <input type="text" id="r1-median" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                            <td class="p-2 text-center">
+                                <input type="text" id="r1-mode" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                        </tr>
+
+                        <!-- FILA 2 -->
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-2 font-semibold text-slate-700 border-r border-slate-200 bg-slate-50/50 text-center">
+                                <span id="cond-2">mitjana &lt; mediana</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">-8</span>
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">-4</span>
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">0</span>
+                                    <span class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">0</span>
+                                </div>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <input type="text" id="r2-mean" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <input type="text" id="r2-median" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                            <td class="p-2 text-center">
+                                <input type="text" id="r2-mode" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                        </tr>
+
+                        <!-- FILA 3 -->
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-2 font-semibold text-slate-700 border-r border-slate-200 bg-slate-50/50 text-center">
+                                <span id="cond-3">mediana &lt; moda</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <input type="text" id="r3-d1" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                    <input type="text" id="r3-d2" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                    <span id="r3-d3-val" class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">8</span>
+                                    <span id="r3-d4-val" class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">8</span>
+                                </div>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <input type="text" id="r3-mean" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <span id="r3-median-given" class="inline-block px-1 font-bold text-slate-700">7</span>
+                            </td>
+                            <td class="p-2 text-center">
+                                <span id="r3-mode-given" class="inline-block px-1 font-bold text-slate-700">8</span>
+                            </td>
+                        </tr>
+
+                        <!-- FILA 4 -->
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-2 font-semibold text-slate-700 border-r border-slate-200 bg-slate-50/50 text-center">
+                                <span id="cond-4">mediana &lt; mitjana</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <span id="r4-d1-val" class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">-4</span>
+                                    <span id="r4-d2-val" class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">3</span>
+                                    <input type="text" id="r4-d3" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                    <input type="text" id="r4-d4" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                </div>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <span id="r4-mean-given" class="inline-block px-1 font-bold text-slate-700">7</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <span id="r4-median-given" class="inline-block px-1 font-bold text-slate-700">4</span>
+                            </td>
+                            <td class="p-2 text-center">
+                                <span id="r4-mode-given" class="inline-block px-1 font-bold text-slate-700">-</span>
+                            </td>
+                        </tr>
+
+                        <!-- FILA 5 -->
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-2 font-semibold text-slate-700 border-r border-slate-200 bg-slate-50/50 text-center">
+                                <span id="cond-5">moda &lt; mitjana</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <input type="text" id="r5-d1" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                    <input type="text" id="r5-d2" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                    <input type="text" id="r5-d3" class="w-9 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none" placeholder="?">
+                                    <span id="r5-d4-val" class="w-9 h-7 flex items-center justify-center bg-slate-100 border border-slate-200 rounded font-bold text-slate-700 leading-none">8.5</span>
+                                </div>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <span id="r5-mean-given" class="inline-block px-1 font-bold text-slate-700">6</span>
+                            </td>
+                            <td class="p-2 border-r border-slate-200 text-center">
+                                <input type="text" id="r5-median" placeholder="?" class="w-12 h-7 text-center border border-slate-300 rounded font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-none">
+                            </td>
+                            <td class="p-2 text-center">
+                                <span id="r5-mode-given" class="inline-block px-1 font-bold text-slate-700">5</span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Botons d'acció -->
+        <section id="action-buttons-row" class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
+            <div class="flex items-center gap-2">
+                <button id="check-btn" onclick="checkAnswers()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm active:scale-95">
+                    <span>✓</span> Corregeix la fitxa
+                </button>
+                <button id="retry-btn" onclick="retryWorksheet()" class="hidden px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm active:scale-95 pulse-attention">
+                    <span>🔄</span> Ho torno a intentar
+                </button>
+                <button id="download-btn" onclick="downloadWorksheet()" class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow transition-all duration-200 flex items-center gap-1.5 text-xs sm:text-sm active:scale-95">
+                    <span>📥</span> Descarrega la feina
+                </button>
+            </div>
+
+            <!-- Indicator visible de nombre d'intents -->
+            <div id="attempts-badge" class="px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 flex items-center gap-1 shadow-sm">
+                <span>🎯</span> Intents realitzats: <span id="attempts-count" class="font-extrabold text-blue-900 text-xs sm:text-sm">0</span>
+            </div>
+        </section>
+
+        <!-- Resum de correcció -->
+        <div id="summary-box" class="hidden p-3 rounded-lg border transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 id="summary-title" class="text-xs sm:text-sm font-bold"></h3>
+                    <p id="summary-text" class="text-xs mt-0.5"></p>
+                </div>
+                <div class="text-right">
+                    <span id="summary-score" class="text-sm sm:text-base font-extrabold block"></span>
+                    <span id="summary-attempts" class="text-[10px] sm:text-xs text-slate-500 font-semibold"></span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Globals per emmagatzemar dades de l'exercici
+        let row1Data = [0, 4, 6, 6];
+        let row2Data = [-8, -4, 0, 0];
+        let attempts = 0;
+
+        function initApp() {
+            const savedState = document.body.getAttribute('data-state');
+            const savedIntents = parseInt(document.body.getAttribute('data-intents') || '0');
+            attempts = savedIntents;
+            const attemptsElem = document.getElementById('attempts-count');
+            if (attemptsElem) attemptsElem.textContent = attempts;
+
+            if (savedState === 'solved') {
+                checkAnswers(true);
+            }
+        }
+
+        function parseNum(val) {
+            if (val === null || val === undefined) return NaN;
+            let clean = val.toString().trim().replace(',', '.');
+            if (clean === '' || isNaN(clean)) return NaN;
+            return parseFloat(clean);
+        }
+
+        function calculateStats(arr) {
+            if (!Array.isArray(arr) || arr.length === 0 || arr.some(isNaN)) {
+                return { mean: NaN, median: NaN, modes: [] };
+            }
+
+            const sorted = [...arr].sort((a, b) => a - b);
+            const mean = sorted.reduce((a, b) => a + b, 0) / sorted.length;
+            const mid = Math.floor(sorted.length / 2);
+            const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+
+            const freq = {};
+            let maxFreq = 0;
+            sorted.forEach(x => {
+                freq[x] = (freq[x] || 0) + 1;
+                if (freq[x] > maxFreq) maxFreq = freq[x];
+            });
+
+            let modes = [];
+            if (maxFreq > 1) {
+                for (let k in freq) {
+                    if (freq[k] === maxFreq) modes.push(parseFloat(k));
+                }
+            }
+
+            return {
+                mean: Math.round(mean * 100) / 100,
+                median: Math.round(median * 100) / 100,
+                modes: modes
+            };
+        }
+
+        function checkAnswers(isReadOnlyCheck = false) {
+            try {
+                if (!isReadOnlyCheck) {
+                    attempts++;
+                    document.body.setAttribute('data-intents', attempts);
+                }
+                
+                const attemptsElem = document.getElementById('attempts-count');
+                if (attemptsElem) attemptsElem.textContent = attempts;
+
+                let correctCount = 0;
+                let totalFields = 0;
+
+                function applyStatus(el, isCorrect) {
+                    if (!el) return;
+                    totalFields++;
+                    el.classList.remove('border-slate-300', 'text-blue-900', 'bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'bg-red-100', 'border-red-500', 'text-red-900');
+                    if (isCorrect) {
+                        correctCount++;
+                        el.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+                    } else {
+                        el.classList.add('bg-red-100', 'border-red-500', 'text-red-900');
+                    }
+                }
+
+                // BLOC 1
+                const q1 = document.getElementById('b1-q1');
+                if (q1) applyStatus(q1, q1.value === 'moda');
+
+                const q2 = document.getElementById('b1-q2');
+                if (q2) applyStatus(q2, q2.value === 'mitjana_centrals');
+
+                const q3 = document.getElementById('b1-q3');
+                if (q3) applyStatus(q3, parseNum(q3.value) === 24);
+
+                // FILA 1
+                const stats1 = calculateStats(row1Data);
+                const r1Mean = document.getElementById('r1-mean');
+                const r1Median = document.getElementById('r1-median');
+                const r1Mode = document.getElementById('r1-mode');
+
+                if (r1Mean) applyStatus(r1Mean, Math.abs(parseNum(r1Mean.value) - stats1.mean) < 0.01);
+                if (r1Median) applyStatus(r1Median, Math.abs(parseNum(r1Median.value) - stats1.median) < 0.01);
+                if (r1Mode) {
+                    const val1Mode = parseNum(r1Mode.value);
+                    applyStatus(r1Mode, !isNaN(val1Mode) && Array.isArray(stats1.modes) && stats1.modes.includes(val1Mode));
+                }
+
+                // FILA 2
+                const stats2 = calculateStats(row2Data);
+                const r2Mean = document.getElementById('r2-mean');
+                const r2Median = document.getElementById('r2-median');
+                const r2Mode = document.getElementById('r2-mode');
+
+                if (r2Mean) applyStatus(r2Mean, Math.abs(parseNum(r2Mean.value) - stats2.mean) < 0.01);
+                if (r2Median) applyStatus(r2Median, Math.abs(parseNum(r2Median.value) - stats2.median) < 0.01);
+                if (r2Mode) {
+                    const val2Mode = parseNum(r2Mode.value);
+                    applyStatus(r2Mode, !isNaN(val2Mode) && Array.isArray(stats2.modes) && stats2.modes.includes(val2Mode));
+                }
+
+                // FILA 3
+                const r3d1 = document.getElementById('r3-d1');
+                const r3d2 = document.getElementById('r3-d2');
+                const r3Mean = document.getElementById('r3-mean');
+
+                const v3d1 = r3d1 ? parseNum(r3d1.value) : NaN;
+                const v3d2 = r3d2 ? parseNum(r3d2.value) : NaN;
+                const v3Mean = r3Mean ? parseNum(r3Mean.value) : NaN;
+
+                const isR3DataValid = !isNaN(v3d1) && !isNaN(v3d2) && v3d1 <= v3d2 && v3d2 === 6;
+                if (r3d1) applyStatus(r3d1, !isNaN(v3d1) && v3d1 <= 6);
+                if (r3d2) applyStatus(r3d2, v3d2 === 6);
+                
+                const expectedR3Mean = (v3d1 + 6 + 8 + 8) / 4;
+                if (r3Mean) applyStatus(r3Mean, !isNaN(v3Mean) && isR3DataValid && Math.abs(v3Mean - expectedR3Mean) < 0.01);
+
+                // FILA 4
+                const r4d3 = document.getElementById('r4-d3');
+                const r4d4 = document.getElementById('r4-d4');
+
+                const v4d3 = r4d3 ? parseNum(r4d3.value) : NaN;
+                const v4d4 = r4d4 ? parseNum(r4d4.value) : NaN;
+
+                if (r4d3) applyStatus(r4d3, v4d3 === 5);
+                if (r4d4) applyStatus(r4d4, v4d4 === 24);
+
+                // FILA 5
+                const r5d1 = document.getElementById('r5-d1');
+                const r5d2 = document.getElementById('r5-d2');
+                const r5d3 = document.getElementById('r5-d3');
+                const r5Median = document.getElementById('r5-median');
+
+                const v5d1 = r5d1 ? parseNum(r5d1.value) : NaN;
+                const v5d2 = r5d2 ? parseNum(r5d2.value) : NaN;
+                const v5d3 = r5d3 ? parseNum(r5d3.value) : NaN;
+                const v5Median = r5Median ? parseNum(r5Median.value) : NaN;
+
+                if (r5d1) applyStatus(r5d1, v5d1 === 5);
+                if (r5d2) applyStatus(r5d2, v5d2 === 5);
+                if (r5d3) applyStatus(r5d3, v5d3 === 5.5);
+                if (r5Median) applyStatus(r5Median, Math.abs(v5Median - 5.25) < 0.01);
+
+                const summaryBox = document.getElementById('summary-box');
+                const summaryTitle = document.getElementById('summary-title');
+                const summaryText = document.getElementById('summary-text');
+                const summaryScore = document.getElementById('summary-score');
+                const summaryAttempts = document.getElementById('summary-attempts');
+
+                if (summaryBox) {
+                    summaryBox.classList.remove(
+                        'hidden', 
+                        'bg-emerald-50', 'border-emerald-300', 'text-emerald-950',
+                        'bg-blue-50', 'border-blue-300', 'text-blue-950',
+                        'bg-amber-50', 'border-amber-300', 'text-amber-950',
+                        'bg-rose-50', 'border-rose-300', 'text-rose-950'
+                    );
+
+                    const percentage = totalFields > 0 ? Math.round((correctCount / totalFields) * 100) : 0;
+
+                    if (percentage === 100) {
+                        summaryBox.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-950');
+                        if (summaryTitle) summaryTitle.textContent = "🎉 Excel·lent treball!";
+                        if (summaryText) summaryText.textContent = "Has resolt totes les activitats correctament i has demostrat un domini complet de les mesures de centralització.";
+                    } else if (percentage >= 75) {
+                        summaryBox.classList.add('bg-blue-50', 'border-blue-300', 'text-blue-950');
+                        if (summaryTitle) summaryTitle.textContent = "👍 Molt bon treball!";
+                        if (summaryText) summaryText.textContent = "Estàs molt a prop del 100%. Revisa les poques caselles vermelles per acabar de corregir els petits detalls.";
+                    } else if (percentage >= 50) {
+                        summaryBox.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-950');
+                        if (summaryTitle) summaryTitle.textContent = "💪 Bon intent! Vas per bon camí.";
+                        if (summaryText) summaryText.textContent = "Has superat la meitat dels exercicis. Revisa les caselles en vermell comprovant l'ordre ascendent de les dades i les fórmules.";
+                    } else {
+                        summaryBox.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-950');
+                        if (summaryTitle) summaryTitle.textContent = "🧩 Continua practicant!";
+                        if (summaryText) summaryText.textContent = "Encara queden conceptes per revisar. Repassa les pautes de la capçalera i torna a calcular les caselles vermelles pas a pas.";
+                    }
+
+                    if (summaryScore) summaryScore.textContent = `${correctCount} / ${totalFields} (${percentage}%)`;
+                    if (summaryAttempts) summaryAttempts.textContent = `Intent nº ${attempts}`;
+                }
+
+                // Bloquejar camps
+                document.querySelectorAll('input, select').forEach(el => {
+                    if (el.id !== 'student-name' && el.id !== 'student-group') {
+                        el.disabled = true;
+                    }
+                });
+
+                // Canviar botons visibles
+                const checkBtn = document.getElementById('check-btn');
+                if (checkBtn) checkBtn.classList.add('hidden');
+                
+                const retryBtn = document.getElementById('retry-btn');
+                if (retryBtn) retryBtn.classList.remove('hidden');
+
+                const downloadBtn = document.getElementById('download-btn');
+                if (downloadBtn) downloadBtn.classList.remove('hidden');
+
+            } catch (err) {
+                console.error("S'ha produït un error durant la correcció:", err);
+            }
+        }
+
+        function retryWorksheet() {
+            // Desbloquejar camps i eliminar fons de colors
+            document.querySelectorAll('input, select').forEach(el => {
+                if (el.id !== 'student-name' && el.id !== 'student-group') {
+                    el.disabled = false;
+                    el.classList.remove(
+                        'bg-emerald-100', 'border-emerald-500', 'text-emerald-900',
+                        'bg-red-100', 'border-red-500', 'text-red-900'
+                    );
+                    el.classList.add('border-slate-300', 'text-blue-900');
+                }
+            });
+
+            const summaryBox = document.getElementById('summary-box');
+            if (summaryBox) summaryBox.classList.add('hidden');
+
+            const checkBtn = document.getElementById('check-btn');
+            if (checkBtn) {
+                checkBtn.disabled = false;
+                checkBtn.classList.remove('hidden');
+            }
+
+            const retryBtn = document.getElementById('retry-btn');
+            if (retryBtn) retryBtn.classList.add('hidden');
+
+            const downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) downloadBtn.classList.add('hidden');
+        }
+
+        async function downloadWorksheet() {
+            // 1. Substituir temporalment els inputs i selects per DIVs de text nítid per evitar retalls a html2canvas
+            const inputsAndSelects = document.querySelectorAll('input, select');
+            const replacements = [];
+
+            inputsAndSelects.forEach(el => {
+                const style = window.getComputedStyle(el);
+                
+                let text = '';
+                if (el.tagName.toLowerCase() === 'select') {
+                    if (el.selectedIndex >= 0 && el.options[el.selectedIndex]) {
+                        text = el.options[el.selectedIndex].text;
+                    } else {
+                        text = '-- Selecciona --';
+                    }
+                } else {
+                    text = el.value || el.placeholder || '';
+                }
+
+                const div = document.createElement('div');
+                div.className = el.className;
+                
+                // Copiar valors d'estil per mantenir la geometria exacta i el fons de correcció
+                const isCentered = (style.textAlign === 'center' || el.classList.contains('text-center'));
+
+                div.style.width = style.width;
+                div.style.height = style.height;
+                div.style.minHeight = style.minHeight;
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = isCentered ? 'center' : 'flex-start';
+                div.style.paddingLeft = isCentered ? '0px' : (style.paddingLeft !== '0px' ? style.paddingLeft : '6px');
+                div.style.paddingRight = isCentered ? '0px' : (style.paddingRight !== '0px' ? style.paddingRight : '6px');
+                div.style.paddingTop = '0px';
+                div.style.paddingBottom = '0px';
+                div.style.fontSize = style.fontSize;
+                div.style.fontWeight = style.fontWeight;
+                div.style.color = style.color;
+                div.style.backgroundColor = style.backgroundColor;
+                div.style.borderColor = style.borderColor;
+                div.style.borderWidth = style.borderWidth;
+                div.style.borderStyle = style.borderStyle;
+                div.style.borderRadius = style.borderRadius;
+                div.style.boxSizing = 'border-box';
+                div.style.overflow = 'hidden';
+                div.style.whiteSpace = 'nowrap';
+                div.style.textOverflow = 'ellipsis';
+                div.style.lineHeight = '1';
+                
+                div.textContent = text;
+
+                const origDisplay = el.style.display;
+                el.style.display = 'none';
+                el.parentNode.insertBefore(div, el);
+
+                replacements.push({ el, div, origDisplay });
+            });
+
+            document.body.setAttribute('data-state', 'solved');
+
+            const rawName = document.getElementById('student-name')?.value || 'Alumne';
+            const rawGroup = document.getElementById('student-group')?.value || 'Grup';
+
+            const cleanName = rawName.trim().replace(/[^a-zA-Z0-9àáèéíòóúçÀÁÈÉÍÒÓÚÇ_]/g, '_') || 'Alumne';
+            const cleanGroup = rawGroup.trim().replace(/[^a-zA-Z0-9]/g, '_') || 'Grup';
+
+            const fileName = `${cleanName}_${cleanGroup}_Estadistica_Mesures_Centralitzacio.pdf`;
+
+            const element = document.querySelector('main');
+            const actionButtonsRow = document.getElementById('action-buttons-row');
+
+            // Amagar temporalment la fila de botons d'acció per al PDF final
+            if (actionButtonsRow) actionButtonsRow.style.display = 'none';
+
+            // Guardar estils originals
+            const originalBodyStyle = document.body.getAttribute('style') || '';
+            const originalElementStyle = element.getAttribute('style') || '';
+
+            // Establir maquetació fixa proporcional A4 per al processament del PDF
+            document.body.style.padding = '0';
+            document.body.style.margin = '0';
+            document.body.style.background = '#ffffff';
+
+            element.style.width = '794px';
+            element.style.maxWidth = '794px';
+            element.style.minHeight = '1050px';
+            element.style.padding = '24px 28px';
+            element.style.boxShadow = 'none';
+            element.style.border = 'none';
+            element.style.borderRadius = '0';
+            element.style.margin = '0 auto';
+            element.style.display = 'flex';
+            element.style.flexDirection = 'column';
+            element.style.justifyContent = 'space-between';
+
+            try {
+                window.scrollTo(0, 0);
+
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: 800
+                });
+
+                // Restaurar interfície d'usuari i inputs originals
+                if (actionButtonsRow) actionButtonsRow.style.display = 'flex';
+                element.setAttribute('style', originalElementStyle);
+                document.body.setAttribute('style', originalBodyStyle);
+
+                replacements.forEach(({ el, div, origDisplay }) => {
+                    el.style.display = origDisplay;
+                    if (div.parentNode) div.parentNode.removeChild(div);
+                });
+
+                // Crear el PDF escalat exactament a 1 pàgina A4 completa i centrada
+                const { jsPDF } = window.jspdf || {};
+
+                if (jsPDF) {
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();   // 210 mm
+                    const pdfHeight = pdf.internal.pageSize.getHeight(); // 297 mm
+                    
+                    const margin = 8; // 8mm de marge
+                    const maxWidth = pdfWidth - (margin * 2);   // 194 mm
+                    const maxHeight = pdfHeight - (margin * 2); // 281 mm
+
+                    let imgWidth = maxWidth;
+                    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    if (imgHeight > maxHeight) {
+                        imgHeight = maxHeight;
+                        imgWidth = (canvas.width * imgHeight) / canvas.height;
+                    }
+
+                    const xPos = (pdfWidth - imgWidth) / 2; // Centrat horitzontal
+                    const yPos = (pdfHeight - imgHeight) / 2; // Centrat vertical
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                    pdf.addImage(imgData, 'JPEG', xPos, yPos, imgWidth, imgHeight);
+                    pdf.save(fileName);
+                } else {
+                    window.print();
+                }
+            } catch (err) {
+                console.error("Error en generar el PDF:", err);
+                if (actionButtonsRow) actionButtonsRow.style.display = 'flex';
+                element.setAttribute('style', originalElementStyle);
+                document.body.setAttribute('style', originalBodyStyle);
+                
+                replacements.forEach(({ el, div, origDisplay }) => {
+                    el.style.display = origDisplay;
+                    if (div.parentNode) div.parentNode.removeChild(div);
+                });
+
+                window.print();
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>
